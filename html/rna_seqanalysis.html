@@ -1,0 +1,444 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>rna_seqanalysis</title><meta name="generator" content="MATLAB 9.7"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-05-23"><meta name="DC.source" content="rna_seqanalysis.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">RNA-Seq Analysis</a></li><li><a href="#2">Find the series entry on GEO</a></li><li><a href="#3">You need to find out the SRR identifiers for wild type and mutant samples.</a></li><li><a href="#4">Download (in your code, if the file isn't downloaded before) the fastq</a></li><li><a href="#5">DO NOT plce the fastqfile files in your dropbox folder.</a></li><li><a href="#6">Download (in your code, if the file isn't downloaded before) the yeast genome fasta file and index it using bwa.</a></li><li><a href="#7">Map the reads (the fastqfiles) against the yeast genome file using bmes_bwa(), which is provided to you.</a></li><li><a href="#8">Download  (and build/install as needed) the featureCounts progeram (from subread package). Download links and doc from</a></li><li><a href="#9">Use featureCounts (from your code, using a system() call to "enrich" the mapped positions in the sam file</a></li><li><a href="#10">Optional: (5% extra credit) Perform TPM normalization of gene counts data.</a></li><li><a href="#11">Compare gene counts between mutant and wild type. List 10 most different (ranked by abs fold change) genes</a></li><li><a href="#12">Use the genes that are differentially regulated between mutant and wild type.</a></li><li><a href="#13">Perform functional enrichment analysis using DAVID. Report the enrichment results using comments or snapshot</a></li></ul></div><h2 id="1">RNA-Seq Analysis</h2><p>Template by [Fernando Ramirez  Thinh Nguyen] Code by [Fernando Ramirez  Thinh Nguyen] Adapted from []</p><pre class="codeinput"><span class="comment">%%Background</span>
+<span class="comment">% In this assignmet, you will re-analyze the RNA-seq reported in the</span>
+<span class="comment">% following paper:</span>
+<span class="comment">% https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4224148/</span>
+</pre><h2 id="2">Find the series entry on GEO</h2><h2 id="3">You need to find out the SRR identifiers for wild type and mutant samples.</h2><p>For this assignment, analyzing one run from each group is sufficient.</p><h2 id="4">Download (in your code, if the file isn't downloaded before) the fastq</h2><p>files from SRA (NCBI Sequence Read Archive). &gt; the fastq files are not available via your browser. You will need the fastq-dump program (RNA Toolkit software) to download the fastq files from NCBI. see: <a href="https://edwards.sdsu.edu/research/fastq-dump/">https://edwards.sdsu.edu/research/fastq-dump/</a></p><pre class="codeinput">    <span class="comment">% &gt; Work in a smaller databset first. When code is complete, appy to</span>
+    <span class="comment">% the origional SRA data. Expect download and analysis of original SRA</span>
+    <span class="comment">% files to take several hours.</span>
+
+    <span class="comment">% &gt; If unable to compelte the assignment using original SRA files, may</span>
+    <span class="comment">% use an alternative dataset (-5% fo grade penalty). You donwnload (in</span>
+    <span class="comment">% your code, if the file isn't downloaded before) a random</span>
+    <span class="comment">% down-sampling of the fastq files  from the following sites:</span>
+
+    <span class="comment">% &gt; http://sacan.biomed.drexel.edu/ftp/rnaseq.dbp2/SRR1302790_pass.randsample.fastq</span>
+    <span class="comment">% &gt; http://sacan.biomed.drexel.edu/ftp/rnaseq.dbp2/SRR1302792_pass.randsample.fastq</span>
+</pre><h2 id="5">DO NOT plce the fastqfile files in your dropbox folder.</h2><p>&gt; place files in the C:\bmes &gt; map downloads to the C: drive WILD TYPE = SRR1302790 MUTANT TYPE = SRR1302792</p><h2 id="6">Download (in your code, if the file isn't downloaded before) the yeast genome fasta file and index it using bwa.</h2><p>&gt; or, download the igenome compilation for yeast, which contains pre-indexed files. &gt; DO NOT PLACE THE GENOME FASTA OR INDEX FILES IN DROPBOX FOLDER. Saccharomyces cerevisiae BY4741 genome file name Use this to locate your fasta files within C: Drive</p><pre class="codeinput">[fngen,pthgen] = uigetfile({<span class="string">'*.gz'</span>;<span class="string">'*.fa'</span>;<span class="string">'*.*'</span>},<span class="string">'Locate &amp; Select the Genome Fasta File'</span>);
+<span class="keyword">if</span> contains(fngen,<span class="string">'.gz'</span>)
+    <span class="comment">% gunzip extract</span>
+    genomefastafile = fullfile(pthgen, fngen);
+    genomefastafile = gunzip(genomefastafile);
+    genomefastafile = genomefastafile{1};
+<span class="keyword">else</span>
+    genomefastafile = fullfile(pthgen, fngen);
+<span class="keyword">end</span>
+<span class="comment">% Import temp fastq file to complete the function before attacking the big file</span>
+<span class="comment">% Then, import Big Run file</span>
+<span class="comment">% Use this to locate your files within C: Drive</span>
+[fnrnWT,pthrnWT] = uigetfile({<span class="string">'*.fastq'</span>;<span class="string">'*.gz'</span>;<span class="string">'*.*'</span>},<span class="string">'Locate &amp; Select the Wild Type FastQ File'</span>);
+<span class="keyword">if</span> contains(fnrnWT,<span class="string">'.gz'</span>)
+    <span class="comment">% gunzip extract</span>
+    fastqfileWT = fullfile(pthrnWT,fnrnWT);
+    fastqfileWT = gunzip(fastqfileWT);
+    fastqfileWT = fastqfileWT{1};
+<span class="keyword">else</span>
+    fastqfileWT = fullfile(pthrnWT,fnrnWT);
+<span class="keyword">end</span>
+[fnrnMT,pthrnMT] = uigetfile({<span class="string">'*.fastq'</span>;<span class="string">'*.gz'</span>;<span class="string">'*.*'</span>},<span class="string">'Locate &amp; Select the Mutant Type FastQ File'</span>);
+<span class="keyword">if</span> contains(fnrnMT,<span class="string">'.gz'</span>)
+    <span class="comment">% gunzip extract</span>
+    fastqfileMT = fullfile(pthrnMT,fnrnMT);
+    fastqfileMT = gunzip(fastqfileMT);
+    fastqfileMT = fastqfileMT{1};
+<span class="keyword">else</span>
+    fastqfileMT = fullfile(pthrnMT,fnrnMT);
+<span class="keyword">end</span>
+</pre><h2 id="7">Map the reads (the fastqfiles) against the yeast genome file using bmes_bwa(), which is provided to you.</h2><pre class="codeinput">[samfileWT,samsWT] = bmes_bwa(fastqfileWT,genomefastafile);
+[samfileMT,samsMT] = bmes_bwa(fastqfileMT,genomefastafile);
+</pre><h2 id="8">Download  (and build/install as needed) the featureCounts progeram (from subread package). Download links and doc from</h2><p>&gt; <a href="http://subread.sourceforge.net/">http://subread.sourceforge.net/</a> &gt; you may download it manually (outisde of code, from browser) &gt; DO NOT PLACE THE GENOME FASTA OR INDEX FILES IN DROPBOX FOLDER.</p><h2 id="9">Use featureCounts (from your code, using a system() call to "enrich" the mapped positions in the sam file</h2><p>into resepective gene names. &gt; DO NOT do featureCounts of a sam file if it has been done before &gt; DO NOT PLACE THE GENOME FASTA OR INDEX FILES IN DROPBOX FOLDER. Downloaded and ready to execute</p><pre class="codeinput">[fnfe, pthfe] = uigetfile(<span class="string">'*.exe'</span>,<span class="string">'Locate &amp; Select featureCount Program'</span>);
+featureCounts = fullfile(pthfe,fnfe);
+[fnAN, pthAN] = uigetfile({<span class="string">'*.gtf'</span>;<span class="string">'*.gz'</span>},<span class="string">'Locate &amp; Select .gtf or annotation file'</span>);
+<span class="keyword">if</span> contains(fnAN,<span class="string">'.gz'</span>)
+    GTFfile = fullfile(pthAN,fnAN);
+    GTFfile = gunzip(GTFfile);
+    GTFfile = GTFfile{1};
+<span class="keyword">else</span>
+    GTFfile = fullfile(pthAN,fnAN);
+<span class="keyword">end</span>
+txtfileWT = [pthAN <span class="string">'sasaccharomyces_readsWT.txt'</span>];
+system([featureCounts <span class="string">' "-a" "'</span> GTFfile <span class="string">'" "-o" "'</span> txtfileWT <span class="string">'" "'</span> samfileWT <span class="string">'"'</span>])
+txtfileMT = [pthAN <span class="string">'sasaccharomyces_readsMT.txt'</span>];
+system([featureCounts <span class="string">' "-a" "'</span> GTFfile <span class="string">'" "-o" "'</span> txtfileMT <span class="string">'" "'</span> samfileMT <span class="string">'"'</span>])
+</pre><pre class="codeoutput"> 
+        ==========     _____ _    _ ____  _____  ______          _____   
+        =====         / ____| |  | |  _ \|  __ \|  ____|   /\   |  __ \  
+          =====      | (___ | |  | | |_) | |__) | |__     /  \  | |  | | 
+            ====      \___ \| |  | |  _ &lt;|  _  /|  __|   / /\ \ | |  | | 
+              ====    ____) | |__| | |_) | | \ \| |____ / ____ \| |__| | 
+        ==========   |_____/ \____/|____/|_|  \_\______/_/    \_\_____/ 
+	  v2.0.2 
+ 
+//========================== featureCounts setting ===========================\\ 
+||                                                                            || 
+||             Input files : 1 SAM file                                       || 
+||                                                                            || 
+||                           SRR1302790_pass.randsample.fastq.sam             || 
+||                                                                            || 
+||             Output file : sasaccharomyces_readsWT.txt                      || 
+||                 Summary : sasaccharomyces_readsWT.txt.summary              || 
+||              Paired-end : no                                               || 
+||        Count read pairs : no                                               || 
+||              Annotation : Saccharomyces_cerevisiae.R64-1-1.104.gtf (GTF)   || 
+||      Dir for temp files : ./                                               || 
+||                                                                            || 
+||                 Threads : 1                                                || 
+||                   Level : meta-feature level                               || 
+||      Multimapping reads : not counted                                      || 
+|| Multi-overlapping reads : not counted                                      || 
+||   Min overlapping bases : 1                                                || 
+||                                                                            || 
+\\============================================================================// 
+ 
+//================================= Running ==================================\\ 
+||                                                                            || 
+|| Load annotation file Saccharomyces_cerevisiae.R64-1-1.104.gtf ...          || 
+||    Features : 7507                                                         || 
+||    Meta-features : 7127                                                    || 
+||    Chromosomes/contigs : 17                                                || 
+||                                                                            || 
+|| Process SAM file SRR1302790_pass.randsample.fastq.sam...                   || 
+||    Single-end reads are included.                                          || 
+||    Total alignments : 48422                                                || 
+||    Successfully assigned alignments : 5411 (11.2%)                         || 
+||    Running time : 0.00 minutes                                             || 
+||                                                                            || 
+|| Write the final count table.                                               || 
+|| Write the read assignment summary.                                         || 
+||                                                                            || 
+|| Summary of counting results can be found in file "C: Users\tnthi\AppData\  || 
+|| Local\Temp\fastq\sasaccharomyces_readsWT.txt.summary"                      || 
+||                                                                            || 
+\\============================================================================// 
+ 
+
+ans =
+
+     0
+
+ 
+        ==========     _____ _    _ ____  _____  ______          _____   
+        =====         / ____| |  | |  _ \|  __ \|  ____|   /\   |  __ \  
+          =====      | (___ | |  | | |_) | |__) | |__     /  \  | |  | | 
+            ====      \___ \| |  | |  _ &lt;|  _  /|  __|   / /\ \ | |  | | 
+              ====    ____) | |__| | |_) | | \ \| |____ / ____ \| |__| | 
+        ==========   |_____/ \____/|____/|_|  \_\______/_/    \_\_____/ 
+	  v2.0.2 
+ 
+//========================== featureCounts setting ===========================\\ 
+||                                                                            || 
+||             Input files : 1 SAM file                                       || 
+||                                                                            || 
+||                           SRR1302792_pass.randsample.fastq.sam             || 
+||                                                                            || 
+||             Output file : sasaccharomyces_readsMT.txt                      || 
+||                 Summary : sasaccharomyces_readsMT.txt.summary              || 
+||              Paired-end : no                                               || 
+||        Count read pairs : no                                               || 
+||              Annotation : Saccharomyces_cerevisiae.R64-1-1.104.gtf (GTF)   || 
+||      Dir for temp files : ./                                               || 
+||                                                                            || 
+||                 Threads : 1                                                || 
+||                   Level : meta-feature level                               || 
+||      Multimapping reads : not counted                                      || 
+|| Multi-overlapping reads : not counted                                      || 
+||   Min overlapping bases : 1                                                || 
+||                                                                            || 
+\\============================================================================// 
+ 
+//================================= Running ==================================\\ 
+||                                                                            || 
+|| Load annotation file Saccharomyces_cerevisiae.R64-1-1.104.gtf ...          || 
+||    Features : 7507                                                         || 
+||    Meta-features : 7127                                                    || 
+||    Chromosomes/contigs : 17                                                || 
+||                                                                            || 
+|| Process SAM file SRR1302792_pass.randsample.fastq.sam...                   || 
+||    Single-end reads are included.                                          || 
+||    Total alignments : 244457                                               || 
+||    Successfully assigned alignments : 78751 (32.2%)                        || 
+||    Running time : 0.01 minutes                                             || 
+||                                                                            || 
+|| Write the final count table.                                               || 
+|| Write the read assignment summary.                                         || 
+||                                                                            || 
+|| Summary of counting results can be found in file "C: Users\tnthi\AppData\  || 
+|| Local\Temp\fastq\sasaccharomyces_readsMT.txt.summary"                      || 
+||                                                                            || 
+\\============================================================================// 
+ 
+
+ans =
+
+     0
+
+</pre><h2 id="10">Optional: (5% extra credit) Perform TPM normalization of gene counts data.</h2><p>reads/length for each gene and then sum normalize it then use the gene counts or TPM for the questions below</p><pre class="codeinput">TWT = readtable(txtfileWT); reads = TWT{:,end}; LENG = TWT{:,<span class="string">'Length'</span>};
+genecountsWT_TPM = reads./LENG; genecountsWT_TPM = (genecountsWT_TPM/sum(genecountsWT_TPM))*1e6;
+TWT = addvars(TWT,genecountsWT_TPM,<span class="string">'NewVariableNames'</span>,<span class="string">'Gene Counts WT - TPM Normalized'</span>);
+
+TMT = readtable(txtfileMT); reads = TMT{:,end}; LENG = TMT{:,<span class="string">'Length'</span>};
+genecountsMT_TPM = reads./LENG; genecountsMT_TPM = (genecountsMT_TPM/sum(genecountsMT_TPM))*1e6;
+TMT = addvars(TMT,genecountsMT_TPM,<span class="string">'NewVariableNames'</span>,<span class="string">'Gene Counts MT - TPM Normalized'</span>);
+</pre><pre class="codeoutput">Warning: Column headers from the file were modified to make
+them valid MATLAB identifiers before creating variable names
+for the table. The original column headers are saved in the
+VariableDescriptions property.
+Set 'PreserveVariableNames' to true to use the original column
+headers as table variable names. 
+Warning: Column headers from the file were modified to make
+them valid MATLAB identifiers before creating variable names
+for the table. The original column headers are saved in the
+VariableDescriptions property.
+Set 'PreserveVariableNames' to true to use the original column
+headers as table variable names. 
+</pre><h2 id="11">Compare gene counts between mutant and wild type. List 10 most different (ranked by abs fold change) genes</h2><pre class="codeinput"><span class="comment">%between the two groups.</span>
+<span class="comment">% deltaCT_WT = zeros(size(TWT,1),1); % preallocation</span>
+<span class="comment">% deltaCT_MT = zeros(size(TMT,1),1); % preallocation</span>
+<span class="comment">% for row = 1:size(TWT,1)</span>
+<span class="comment">%     deltaCT_WT(row) = mean(TWT(row,'Gene Counts WT - TPM Normalized'));</span>
+<span class="comment">%     deltaCT_MT(row) = mean(TMT(row,'Gene Counts MT - TPM Normalized'));</span>
+<span class="comment">% end</span>
+deltadeltaCT = TMT{:,<span class="string">'Gene Counts MT - TPM Normalized'</span>} - TWT{:,<span class="string">'Gene Counts WT - TPM Normalized'</span>};
+FC = 2.^(-deltadeltaCT);
+<span class="keyword">for</span> row = 1:size(FC,1)
+    <span class="keyword">if</span> FC(row) &lt; 1
+        FC(row) = (-1/FC(row));
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+[FCsort, FCindex] = sort(abs(FC),<span class="string">'descend'</span>);
+T = TWT(FCindex,1); T.Properties.VariableNames = {<span class="string">'WildTypeGeneID'</span>};
+T = [T TMT(FCindex,1)]; T.Properties.VariableNames(2) = {<span class="string">'MutantTypeGeneID'</span>};
+T = [T array2table(FCsort)]; T.Properties.VariableNames(3) = {<span class="string">'FCVal'</span>};
+T.Properties.Description = <span class="string">'Top 10 Most Different Genes According to FC values'</span>;
+fprintf(<span class="string">'Top 10 Most Different Genes\n'</span>)
+disp(T(1:10,:))
+</pre><pre class="codeoutput">Top 10 Most Different Genes
+    WildTypeGeneID    MutantTypeGeneID    FCVal
+    ______________    ________________    _____
+
+    {'YDL133C-A'}      {'YDL133C-A'}       Inf 
+    {'snR47'    }      {'snR47'    }       Inf 
+    {'snR8'     }      {'snR8'     }       Inf 
+    {'snR35'    }      {'snR35'    }       Inf 
+    {'YOL086C'  }      {'YOL086C'  }       Inf 
+    {'tE(UUC)G1'}      {'tE(UUC)G1'}       Inf 
+    {'tH(GUG)G1'}      {'tH(GUG)G1'}       Inf 
+    {'tH(GUG)G2'}      {'tH(GUG)G2'}       Inf 
+    {'snR82'    }      {'snR82'    }       Inf 
+    {'YLR167W'  }      {'YLR167W'  }       Inf 
+
+</pre><h2 id="12">Use the genes that are differentially regulated between mutant and wild type.</h2><p>You have to defind/decide what is means to be differentially regulated.</p><h2 id="13">Perform functional enrichment analysis using DAVID. Report the enrichment results using comments or snapshot</h2><p>image(s) of DAVID enriched annotations list.</p><pre class="codeinput">img = imread(<span class="string">'DavidScreenshot.png'</span>);
+imshow(img)
+</pre><img vspace="5" hspace="5" src="rna_seqanalysis_01.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% RNA-Seq Analysis 
+% Template by [Fernando Ramirez  Thinh Nguyen]
+% Code by [Fernando Ramirez  Thinh Nguyen]
+% Adapted from []
+%%Background 
+% In this assignmet, you will re-analyze the RNA-seq reported in the
+% following paper: 
+% https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4224148/
+%% Find the series entry on GEO 
+%% You need to find out the SRR identifiers for wild type and mutant samples. 
+% For this assignment, analyzing one run from each group is sufficient. 
+%% Download (in your code, if the file isn't downloaded before) the fastq 
+% files from SRA (NCBI Sequence Read Archive).
+    % > the fastq files are not available via your browser. You will need
+    % the fastq-dump program (RNA Toolkit software) to download the fastq
+    % files from NCBI. see: https://edwards.sdsu.edu/research/fastq-dump/
+    
+    % > Work in a smaller databset first. When code is complete, appy to
+    % the origional SRA data. Expect download and analysis of original SRA
+    % files to take several hours. 
+    
+    % > If unable to compelte the assignment using original SRA files, may 
+    % use an alternative dataset (-5% fo grade penalty). You donwnload (in
+    % your code, if the file isn't downloaded before) a random
+    % down-sampling of the fastq files  from the following sites: 
+    
+    % > http://sacan.biomed.drexel.edu/ftp/rnaseq.dbp2/SRR1302790_pass.randsample.fastq
+    % > http://sacan.biomed.drexel.edu/ftp/rnaseq.dbp2/SRR1302792_pass.randsample.fastq
+%% DO NOT plce the fastqfile files in your dropbox folder.   
+    % > place files in the C:\bmes 
+    % > map downloads to the C: drive
+    % WILD TYPE = SRR1302790
+    % MUTANT TYPE = SRR1302792
+%% Download (in your code, if the file isn't downloaded before) the yeast genome fasta file and index it using bwa.
+    % > or, download the igenome compilation for yeast, which contains
+    % pre-indexed files. 
+    % > DO NOT PLACE THE GENOME FASTA OR INDEX FILES IN DROPBOX FOLDER. 
+% Saccharomyces cerevisiae BY4741 genome file name
+% Use this to locate your fasta files within C: Drive
+[fngen,pthgen] = uigetfile({'*.gz';'*.fa';'*.*'},'Locate & Select the Genome Fasta File'); 
+if contains(fngen,'.gz')
+    % gunzip extract
+    genomefastafile = fullfile(pthgen, fngen);
+    genomefastafile = gunzip(genomefastafile);
+    genomefastafile = genomefastafile{1};
+else
+    genomefastafile = fullfile(pthgen, fngen);
+end
+% Import temp fastq file to complete the function before attacking the big file
+% Then, import Big Run file
+% Use this to locate your files within C: Drive
+[fnrnWT,pthrnWT] = uigetfile({'*.fastq';'*.gz';'*.*'},'Locate & Select the Wild Type FastQ File'); 
+if contains(fnrnWT,'.gz')
+    % gunzip extract
+    fastqfileWT = fullfile(pthrnWT,fnrnWT);
+    fastqfileWT = gunzip(fastqfileWT);
+    fastqfileWT = fastqfileWT{1};
+else
+    fastqfileWT = fullfile(pthrnWT,fnrnWT);
+end
+[fnrnMT,pthrnMT] = uigetfile({'*.fastq';'*.gz';'*.*'},'Locate & Select the Mutant Type FastQ File'); 
+if contains(fnrnMT,'.gz')
+    % gunzip extract
+    fastqfileMT = fullfile(pthrnMT,fnrnMT);
+    fastqfileMT = gunzip(fastqfileMT);
+    fastqfileMT = fastqfileMT{1};
+else
+    fastqfileMT = fullfile(pthrnMT,fnrnMT);
+end
+    
+%% Map the reads (the fastqfiles) against the yeast genome file using bmes_bwa(), which is provided to you. 
+[samfileWT,samsWT] = bmes_bwa(fastqfileWT,genomefastafile);
+[samfileMT,samsMT] = bmes_bwa(fastqfileMT,genomefastafile);
+%% Download  (and build/install as needed) the featureCounts progeram (from subread package). Download links and doc from
+    % > http://subread.sourceforge.net/ 
+    % > you may download it manually (outisde of code, from browser)
+    % > DO NOT PLACE THE GENOME FASTA OR INDEX FILES IN DROPBOX FOLDER.
+%% Use featureCounts (from your code, using a system() call to "enrich" the mapped positions in the sam file
+% into resepective gene names. 
+    % > DO NOT do featureCounts of a sam file if it has been done before
+    % > DO NOT PLACE THE GENOME FASTA OR INDEX FILES IN DROPBOX FOLDER.
+    % Downloaded and ready to execute
+[fnfe, pthfe] = uigetfile('*.exe','Locate & Select featureCount Program');
+featureCounts = fullfile(pthfe,fnfe);
+[fnAN, pthAN] = uigetfile({'*.gtf';'*.gz'},'Locate & Select .gtf or annotation file');
+if contains(fnAN,'.gz')
+    GTFfile = fullfile(pthAN,fnAN);
+    GTFfile = gunzip(GTFfile);
+    GTFfile = GTFfile{1};
+else
+    GTFfile = fullfile(pthAN,fnAN);
+end
+txtfileWT = [pthAN 'sasaccharomyces_readsWT.txt'];
+system([featureCounts ' "-a" "' GTFfile '" "-o" "' txtfileWT '" "' samfileWT '"'])
+txtfileMT = [pthAN 'sasaccharomyces_readsMT.txt'];
+system([featureCounts ' "-a" "' GTFfile '" "-o" "' txtfileMT '" "' samfileMT '"'])
+%% Optional: (5% extra credit) Perform TPM normalization of gene counts data.
+% reads/length for each gene and then sum normalize it
+% then use the gene counts or TPM for the questions below
+TWT = readtable(txtfileWT); reads = TWT{:,end}; LENG = TWT{:,'Length'};
+genecountsWT_TPM = reads./LENG; genecountsWT_TPM = (genecountsWT_TPM/sum(genecountsWT_TPM))*1e6;
+TWT = addvars(TWT,genecountsWT_TPM,'NewVariableNames','Gene Counts WT - TPM Normalized');
+
+TMT = readtable(txtfileMT); reads = TMT{:,end}; LENG = TMT{:,'Length'};
+genecountsMT_TPM = reads./LENG; genecountsMT_TPM = (genecountsMT_TPM/sum(genecountsMT_TPM))*1e6;
+TMT = addvars(TMT,genecountsMT_TPM,'NewVariableNames','Gene Counts MT - TPM Normalized');
+%% Compare gene counts between mutant and wild type. List 10 most different (ranked by abs fold change) genes
+%between the two groups.
+% deltaCT_WT = zeros(size(TWT,1),1); % preallocation
+% deltaCT_MT = zeros(size(TMT,1),1); % preallocation
+% for row = 1:size(TWT,1)
+%     deltaCT_WT(row) = mean(TWT(row,'Gene Counts WT - TPM Normalized'));
+%     deltaCT_MT(row) = mean(TMT(row,'Gene Counts MT - TPM Normalized'));
+% end
+deltadeltaCT = TMT{:,'Gene Counts MT - TPM Normalized'} - TWT{:,'Gene Counts WT - TPM Normalized'};
+FC = 2.^(-deltadeltaCT);
+for row = 1:size(FC,1)
+    if FC(row) < 1
+        FC(row) = (-1/FC(row));
+    end
+end
+[FCsort, FCindex] = sort(abs(FC),'descend');
+T = TWT(FCindex,1); T.Properties.VariableNames = {'WildTypeGeneID'};
+T = [T TMT(FCindex,1)]; T.Properties.VariableNames(2) = {'MutantTypeGeneID'};
+T = [T array2table(FCsort)]; T.Properties.VariableNames(3) = {'FCVal'};
+T.Properties.Description = 'Top 10 Most Different Genes According to FC values';
+fprintf('Top 10 Most Different Genes\n')
+disp(T(1:10,:))
+
+%% Use the genes that are differentially regulated between mutant and wild type. 
+% You have to defind/decide what is means to be differentially regulated. 
+%% Perform functional enrichment analysis using DAVID. Report the enrichment results using comments or snapshot 
+% image(s) of DAVID enriched annotations list. 
+img = imread('DavidScreenshot.png');
+imshow(img)
+
+
+
+
+
+
+
+##### SOURCE END #####
+--></body></html>
